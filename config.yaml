@@ -12,7 +12,7 @@ board:
   jql_filter: ""
 
 slack:
-  enabled: false
+  enabled: true
 
 stale_thresholds:
   epic: 60
