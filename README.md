@@ -48,12 +48,12 @@ make build
    - `JIRA_EMAIL`
    - `JIRA_API_TOKEN`
    - `SLACK_WEBHOOK_URL`
-3. Commit your `config.yaml` (it contains no secrets)
-4. Workflows run on schedule:
+   - `CONFIG_YAML` — full contents of your `config.yaml`
+3. Workflows run on schedule:
    - **Label Sync**: Monday 06:00 UTC
-   - **Status Report**: Monday 09:00 UTC
-   - **Stale Report**: Wednesday 09:00 UTC
-5. All workflows support manual trigger via `workflow_dispatch`
+   - **Status Report**: Monday 06:15 UTC
+   - **Stale Report**: Monday 06:15 UTC
+4. All workflows support manual trigger via `workflow_dispatch`
 
 ## Config
 
@@ -62,12 +62,13 @@ See [config.example.yaml](config.example.yaml) for all options. Key sections:
 | Section | Description |
 |---------|-------------|
 | `jira.base_url` | Your Jira Cloud instance URL |
-| `team.members` | List of Jira usernames to track |
+| `team.members` | List of Jira display names to track |
 | `board.label` | Label to add/filter by |
 | `board.project_keys` | Scope label-sync to these projects |
 | `board.jql_filter` | Optional custom JQL (overrides label filter) |
+| `label_sync.lookback_days` | How far back to scan for issues to label |
 | `stale_thresholds` | Days without status change per issue type |
-| `status_report.lookback_days` | How far back to check for changes |
+| `status_report.lookback_days` | How far back to check for status changes |
 
 ### Override hierarchy
 
