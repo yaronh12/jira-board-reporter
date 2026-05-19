@@ -19,6 +19,11 @@ jobs:
       - name: Build
         run: go build -o jira-board-keeper .
 
+      - name: Write config
+        run: echo "$CONFIG_YAML" > config.yaml
+        env:
+          CONFIG_YAML: ${{ secrets.CONFIG_YAML }}
+
       - name: Run stale report
         env:
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
