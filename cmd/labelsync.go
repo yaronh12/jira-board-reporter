@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/yaronhod/jira-board-keeper/internal/jira"
 	"github.com/yaronhod/jira-board-keeper/internal/labelsync"
+	"github.com/yaronhod/jira-board-keeper/internal/slack"
 )
 
 var labelSyncCmd = &cobra.Command{
@@ -38,6 +39,15 @@ var labelSyncCmd = &cobra.Command{
 			"already_labeled", result.AlreadyLabeled,
 			"newly_labeled", result.NewlyLabeled,
 			"errors", result.Errors)
+
+		if cfg.Slack.Enabled && result.NewlyLabeled > 0 {
+			slackClient := slack.NewClient(cfg.Slack.WebhookURL, cfg.DryRun, logger)
+			msg := slack.FormatLabelSyncReport(cfg.Team.Name,
+				result.TotalFound, result.AlreadyLabeled, result.NewlyLabeled, result.Errors)
+			if err := slackClient.Send(cmd.Context(), msg); err != nil {
+				logger.Error("failed to send slack notification", "error", err)
+			}
+		}
 
 		return nil
 	},

@@ -84,6 +84,22 @@ func FormatStatusReport(teamName string, changes []jira.StatusChange, jiraBaseUR
 	return &Message{Text: fallback, Blocks: blocks}
 }
 
+func FormatLabelSyncReport(teamName string, totalFound, alreadyLabeled, newlyLabeled, errors int) *Message {
+	fallback := fmt.Sprintf("Label Sync - %s: %d newly labeled", teamName, newlyLabeled)
+
+	blocks := []Block{
+		header(fmt.Sprintf("Label Sync - %s", teamName)),
+		divider(),
+	}
+
+	summary := fmt.Sprintf(
+		"• *Issues scanned:* %d\n• *Already labeled:* %d\n• *Newly labeled:* %d\n• *Errors:* %d",
+		totalFound, alreadyLabeled, newlyLabeled, errors)
+	blocks = append(blocks, section(summary))
+
+	return &Message{Text: fallback, Blocks: blocks}
+}
+
 type StaleIssue struct {
 	Issue          jira.Issue
 	DaysSinceChange int
