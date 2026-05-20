@@ -66,8 +66,11 @@ See [config.example.yaml](config.example.yaml) for all options. Key sections:
 | `board.label` | Label to add/filter by |
 | `board.project_keys` | Scope label-sync to these projects |
 | `board.jql_filter` | Optional custom JQL (overrides label filter) |
+| `label_sync.enabled` | Enable/disable label sync (default: `true`) |
 | `label_sync.lookback_days` | How far back to scan for issues to label |
-| `stale_thresholds` | Days without status change per issue type |
+| `stale_report.enabled` | Enable/disable stale report (default: `true`) |
+| `stale_report.thresholds` | Days without status change per issue type |
+| `status_report.enabled` | Enable/disable status report (default: `true`) |
 | `status_report.lookback_days` | How far back to check for status changes |
 
 ### Override hierarchy

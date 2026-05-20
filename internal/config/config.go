@@ -9,15 +9,15 @@ import (
 )
 
 type Config struct {
-	Jira            JiraConfig        `mapstructure:"jira"`
-	Team            TeamConfig        `mapstructure:"team"`
-	Board           BoardConfig        `mapstructure:"board"`
-	Slack           SlackConfig        `mapstructure:"slack"`
-	StaleThresholds map[string]int     `mapstructure:"stale_thresholds"`
-	LabelSync       LabelSyncConfig    `mapstructure:"label_sync"`
-	StatusReport    StatusReportConfig `mapstructure:"status_report"`
-	LogLevel        string            `mapstructure:"log_level"`
-	DryRun          bool              `mapstructure:"dry_run"`
+	Jira         JiraConfig         `mapstructure:"jira"`
+	Team         TeamConfig         `mapstructure:"team"`
+	Board        BoardConfig        `mapstructure:"board"`
+	Slack        SlackConfig        `mapstructure:"slack"`
+	LabelSync    LabelSyncConfig    `mapstructure:"label_sync"`
+	StatusReport StatusReportConfig `mapstructure:"status_report"`
+	StaleReport  StaleReportConfig  `mapstructure:"stale_report"`
+	LogLevel     string             `mapstructure:"log_level"`
+	DryRun       bool               `mapstructure:"dry_run"`
 }
 
 type JiraConfig struct {
@@ -43,11 +43,18 @@ type SlackConfig struct {
 }
 
 type LabelSyncConfig struct {
-	LookbackDays int `mapstructure:"lookback_days"`
+	Enabled      bool `mapstructure:"enabled"`
+	LookbackDays int  `mapstructure:"lookback_days"`
 }
 
 type StatusReportConfig struct {
-	LookbackDays int `mapstructure:"lookback_days"`
+	Enabled      bool `mapstructure:"enabled"`
+	LookbackDays int  `mapstructure:"lookback_days"`
+}
+
+type StaleReportConfig struct {
+	Enabled    bool           `mapstructure:"enabled"`
+	Thresholds map[string]int `mapstructure:"thresholds"`
 }
 
 func Load(path string) (*Config, error) {
@@ -56,15 +63,18 @@ func Load(path string) (*Config, error) {
 	v.SetDefault("log_level", "info")
 	v.SetDefault("dry_run", false)
 	v.SetDefault("slack.enabled", true)
+	v.SetDefault("label_sync.enabled", true)
 	v.SetDefault("label_sync.lookback_days", 7)
+	v.SetDefault("status_report.enabled", true)
 	v.SetDefault("status_report.lookback_days", 7)
-	v.SetDefault("stale_thresholds", map[string]int{
-		"epic":    60,
-		"story":   30,
-		"task":    30,
-		"bug":     30,
+	v.SetDefault("stale_report.enabled", true)
+	v.SetDefault("stale_report.thresholds", map[string]int{
+		"epic":     60,
+		"story":    30,
+		"task":     30,
+		"bug":      30,
 		"sub_task": 30,
-		"default": 30,
+		"default":  30,
 	})
 
 	v.SetConfigFile(path)
@@ -117,10 +127,10 @@ func (c *Config) Validate() error {
 func (c *Config) GetStaleThreshold(issueType string) int {
 	normalized := strings.ToLower(strings.ReplaceAll(issueType, "-", "_"))
 	normalized = strings.ReplaceAll(normalized, " ", "_")
-	if days, ok := c.StaleThresholds[normalized]; ok {
+	if days, ok := c.StaleReport.Thresholds[normalized]; ok {
 		return days
 	}
-	if days, ok := c.StaleThresholds["default"]; ok {
+	if days, ok := c.StaleReport.Thresholds["default"]; ok {
 		return days
 	}
 	return 30

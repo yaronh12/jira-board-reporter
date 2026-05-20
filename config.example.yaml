@@ -28,21 +28,25 @@ slack:
   enabled: true
   # Webhook URL via SLACK_WEBHOOK_URL environment variable
 
-# Stale issue thresholds (days without status change)
-stale_thresholds:
-  epic: 60
-  story: 30
-  task: 30
-  bug: 30
-  sub_task: 30
-  default: 30
-
 # Label sync settings
 label_sync:
+  enabled: true
   lookback_days: 7
+
+# Stale report settings (days without status change)
+stale_report:
+  enabled: true
+  thresholds:
+    epic: 60
+    story: 30
+    task: 30
+    bug: 30
+    sub_task: 30
+    default: 30
 
 # Status report settings
 status_report:
+  enabled: true
   lookback_days: 7
 
 # Logging

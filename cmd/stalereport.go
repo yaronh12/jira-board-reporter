@@ -17,17 +17,22 @@ var staleReportCmd = &cobra.Command{
 	Short: "Report stale issues to Slack",
 	Long:  "Scans board issues for items that haven't had a status change within the configured threshold and reports them to Slack.",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if !cfg.StaleReport.Enabled {
+			logger.Info("stale-report is disabled in config, skipping")
+			return nil
+		}
+
 		if err := cfg.Validate(); err != nil {
 			return err
 		}
 
 		if cmd.Flags().Changed("epic-threshold") {
-			cfg.StaleThresholds["epic"] = epicThreshold
+			cfg.StaleReport.Thresholds["epic"] = epicThreshold
 		}
 		if cmd.Flags().Changed("default-threshold") {
-			for k := range cfg.StaleThresholds {
+			for k := range cfg.StaleReport.Thresholds {
 				if k != "epic" {
-					cfg.StaleThresholds[k] = defaultThreshold
+					cfg.StaleReport.Thresholds[k] = defaultThreshold
 				}
 			}
 		}
